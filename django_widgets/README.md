@@ -40,19 +40,21 @@ class WidgetFoo(django_widgets.Widget):
             )
         }
         script = {  # tag <script> for inline scripts
-            'text/javascript': {# value of attribute type
-                'script_id': ('/path/to/script_template.html',)
+            'text/javascript': {  # value of attribute type
+                'script_id': (  # value of attribute id
+                    '/path/to/script_template.html',
+                )  # tuple
             }
         }
         css = {  # tag <link>
             'all': (  # value of attribute media
                 'http://abolute/path/to/style.css', # value of attribute href
-            )
+            ) # tuple
         }
         style = {  # tag <style>
             'all': (  # value of attribute media
                 '/path/to/style_template.css'
-            )                  
+            )  # tuple                
         }   
 ```
 

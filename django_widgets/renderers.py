@@ -2,16 +2,22 @@ import functools
 from pathlib import Path
 
 from django.conf import settings
-from django.template.backends.django import DjangoTemplates as TemplatesDjango, Template, TemplateDoesNotExist, reraise
+from django.template.backends.django import DjangoTemplates as TemplatesDjango, Template as TemplateDjango, reraise
+from django.template.exceptions import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.loader import get_template
 from django.utils.functional import cached_property
 from django.utils.module_loading import import_string
 
 try:
-    from django.template.backends.jinja2 import Jinja2 as TemplatesJinja2
+    from django.template.backends.jinja2 import Jinja2 as TemplatesJinja2, Template as TemplateJinja2, get_exception_info
+    import jinja2
 except ImportError:
     def TemplatesJinja2(params):
         raise ImportError("jinja2 isn't installed")
+
+    def TemplateJinja2(params):
+        raise ImportError("jinja2 isn't installed")
+
 
 ROOT = Path(__file__).parent
 
@@ -73,13 +79,29 @@ class DjangoContextRenderer(BaseRenderer):
 
     def get_template(self, template_name):
         try:
-            return Template(self.engine.get_template(template_name), self)
+            return TemplateDjango(self.engine.get_template(template_name), self)
         except TemplateDoesNotExist as exc:
             reraise(exc, self)
 
     @cached_property
     def engine(self):
         return self.context.template.engine
+
+
+class Jinja2EnvironmentRenderer(BaseRenderer):
+    def __init__(self, environment):
+        self.env = environment
+        self.template_context_processors = []
+
+    def get_template(self, template_name):
+        try:
+            return TemplateJinja2(self.env.get_template(template_name), self)
+        except jinja2.TemplateNotFound as exc:
+            raise TemplateDoesNotExist(exc.name, backend=self) from exc
+        except jinja2.TemplateSyntaxError as exc:
+            new = TemplateSyntaxError(exc.args)
+            new.template_debug = get_exception_info(exc)
+            raise new from exc
 
 
 class TemplatesSetting(BaseRenderer):

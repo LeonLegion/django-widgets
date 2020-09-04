@@ -113,9 +113,10 @@ class MyView(TemplateView):
 ### widgetmedia
 
 ```djangotemplate
-{% widgetmedia %}
-{% widgetmedia 'js' %}
-{% widgetmedia 'css' %}
-{% widgetmedia 'style' 'widget_name' %}
-{% widgetmedia 'script' %}
+{% widgetmedia %}  {# output all media for all widgets #}
+{% widgetmedia 'js' %} {# print <script src="...">  for all widgets #}
+{% widgetmedia 'css' %} {# print <link> for all widgets #}
+{% widgetmedia 'style' %} {# print <style> for all widgets #}
+{% widgetmedia 'script' name='widget_name'  %} {# print <script> for widjet with specified name #}
+{% widgetmedia name='widget_name' %}  {# output all media for widjet with specified name#}
 ```

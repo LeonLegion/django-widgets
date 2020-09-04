@@ -42,10 +42,7 @@ def widget_attrs(context, attrs=None, **kwargs):
     result = []
     for key, value in d.items():
         if value is not None and value is not False:
-            if value == '' or value is True:
-                result.append(key)
-            else:
-                result.append(key + '="' + conditional_escape(value) + '"')
+            result.append(key if value == '' or value is True else key + '="' + conditional_escape(value) + '"')
 
     return mark_safe(' '.join(result))
 
@@ -56,8 +53,10 @@ def widget_media(context, manner='all', name=None):
 
     if storage.has(name):
         media = storage.get(name).media
-    else:
+    elif name is None:
         media = storage.media
+    else:
+        return ''
 
     if manner in ('css', 'js', 'style', 'script'):
         return mark_safe('\n'.join(getattr(media, 'render_' + manner)(context=context.flatten(), request=context.request, renderer=DjangoContextRenderer(context))))

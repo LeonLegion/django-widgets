@@ -1,5 +1,6 @@
 from django.utils.safestring import mark_safe
-from jinja2.lexer import TOKEN_NAME, TOKEN_EQ, TOKEN_ASSIGN, TOKEN_SUB, TOKEN_STRING, TOKEN_BLOCK_END
+from jinja2.lexer import TOKEN_NAME, TOKEN_ASSIGN, TOKEN_SUB, TOKEN_BLOCK_END, Token, TOKEN_STRING, TOKEN_COLON, \
+    TOKEN_DOT
 from jinja2.ext import Extension, nodes
 from django.utils.html import conditional_escape
 from jinja2.nodes import Keyword
@@ -12,58 +13,49 @@ class WidgetExtension(Extension):
     tags = {"widget", "widgetattrs", "widgetmedia"}
 
     def parse(self, parser):
-        token = next(parser.stream)
+        token = parser.stream.next_if(TOKEN_NAME)
         context = nodes.ContextReference()
-        if token.value == "widget":
-            args = [context, parser.parse_expression()]
+        if token.value == "widget" and parser.stream.current.test(TOKEN_STRING):
+            args = [context, parser.parse_primary()]
             kwargs = []
             keys = {}
             i = 0
-            name = parser.stream.next_if(TOKEN_NAME)
+            name = self.next_if_name(parser.stream)
             while name:
                 key = name.value
-                while parser.stream.current.test(TOKEN_SUB):
-                    key += parser.stream.next_if(TOKEN_SUB).value
-                    name = parser.stream.next_if(TOKEN_NAME)
-                    if name:
-                        key += name.value
+                if key != "attrs" and key != "data":
+                    i += 1
+                    keys[f"attr{i}"] = key
+                    key = f"attr{i}"
                 if not parser.stream.current.test(TOKEN_ASSIGN):
                     value = nodes.Const("")
                 else:
                     next(parser.stream)
                     value = parser.parse_expression()
-                if key != "attrs" and key != "data":
-                    i += 1
-                    keys[f"attr{i}"] = key
-                    key = f"attr{i}"
                 kwargs.append(Keyword(key, value))
-                name = parser.stream.next_if(TOKEN_NAME)
+                name = self.next_if_name(parser.stream)
             args.append(nodes.Const(keys))
             result = self.call_method("_render_widget", args, kwargs, lineno=token.lineno)
+
         elif token.value == "widgetattrs":
             args = [context]
             kwargs = []
             keys = {}
             i = 0
-            name = parser.stream.next_if(TOKEN_NAME)
+            name = self.next_if_name(parser.stream)
             while name:
                 key = name.value
-                while parser.stream.current.test(TOKEN_SUB):
-                    key += parser.stream.next_if(TOKEN_SUB).value
-                    name = parser.stream.next_if(TOKEN_NAME)
-                    if name:
-                        key += name.value
+                if key != "attrs":
+                    i += 1
+                    keys[f"attr{i}"] = key
+                    key = f"attr{i}"
                 if not parser.stream.current.test(TOKEN_ASSIGN):
                     value = nodes.Const("")
                 else:
                     next(parser.stream)
                     value = parser.parse_expression()
-                if key != "attrs":
-                    i += 1
-                    keys[f"attr{i}"] = key
-                    key = f"attr{i}"
                 kwargs.append(Keyword(key, value))
-                name = parser.stream.next_if(TOKEN_NAME)
+                name = self.next_if_name(parser.stream)
             args.append(nodes.Const(keys))
             result = self.call_method("_render_widgetattrs", args, kwargs, lineno=token.lineno)
 
@@ -80,6 +72,13 @@ class WidgetExtension(Extension):
             result = self.call_method("_render_widgetmedia", args, kwargs, lineno=token.lineno)
 
         return nodes.Output([result], lineno=token.lineno)
+
+    def next_if_name(self, stream):
+        name = ''
+        while stream.current.test(TOKEN_SUB) or stream.current.test(TOKEN_NAME) or stream.current.test(TOKEN_COLON) or stream.current.test(TOKEN_DOT) or stream.current.test(TOKEN_DOT):
+            name += next(stream).value
+
+        return Token(stream.current.lineno, TOKEN_NAME, name) if name else None
 
     def _render_widget(self, context, name, keys, data=None, attrs=None, **kwargs):
         request = context.get("request")

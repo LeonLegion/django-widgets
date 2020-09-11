@@ -77,7 +77,7 @@ class MultiWidget(django_widgets.MultiWidgetMixin, django_widgets.Widget):
 
 ##Using
 
-Before using tag widget in template you must
+You must use add_widget before using tag widget in template
 
 ```python
 from django_widgets.api import add_widget
@@ -100,7 +100,7 @@ class MyView(TemplateView):
 
 ```djangotemplate
 {% load widget %}
-{% widget 'widget_name' data=widget_data attrs=widget_attr attr_name=attr_value %}
+{% widget 'widget_name' data=widget_data attrs=widget_attr attr-name=attr_value %}
 ```
 
 ### widgetattrs

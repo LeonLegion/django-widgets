@@ -1,11 +1,12 @@
-#Widgets for django
+# Widgets for django
+
 ## Introduction
 Widget is template linked with styles and scripts. Application gives you the ability collect media from 
 different widgets and places it in the template wherever you want.
 
 
 ## Initialization
-
+Add to your Django settings
 ```python
 INSTALLED_APPS = [
     #...
@@ -21,7 +22,7 @@ MIDDLEWARE = [
 ```
 
 You can also build tag set into templates
-```
+```python
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.jinja2.Jinja2',
@@ -102,7 +103,7 @@ class MultiWidget(django_widgets.MultiWidgetMixin, django_widgets.Widget):
         return request
 ```
 
-##Using
+## Using
 
 You must use add_widget before using tag widget in template
 

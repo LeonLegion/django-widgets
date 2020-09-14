@@ -20,6 +20,33 @@ MIDDLEWARE = [
 ]
 ```
 
+You can also build tag set into templates
+```
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'DIRS': [os.path.join(BASE_DIR, 'jinja2')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'environment': 'jinja2.Environment',
+            'extensions': ['django_widgets.jinja2tags.widget'],
+            # ...
+        },
+    },
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            # ...
+            'builtins': [
+                'django_widgets.templatetags.widget'
+            ],
+        },
+    },
+]
+```
+
 ## Class Widget
 
 ```python
@@ -37,7 +64,7 @@ class WidgetFoo(django_widgets.Widget):
         js = {  # tag <script> for external scripts
             'async': (  # download method (async, defer). Maybe empty string
                 'https://absolute/path/to/script.js', # value of attribute src
-            )
+            ) # tuple
         }
         script = {  # tag <script> for inline scripts
             'text/javascript': {  # value of attribute type
@@ -53,7 +80,7 @@ class WidgetFoo(django_widgets.Widget):
         }
         style = {  # tag <style>
             'all': (  # value of attribute media
-                '/path/to/style_template.css'
+                '/path/to/style_template.css',
             )  # tuple                
         }   
 ```
@@ -95,19 +122,24 @@ class MyView(TemplateView):
 ```
 
 ## Tags
-
-### widget
-
+In Django Template before use you need load tag set
 ```djangotemplate
 {% load widget %}
-{% widget 'widget_name' data=widget_data attrs=widget_attr attr-name=attr_value %}
+```
+
+### widget
+You can call a widget in a template with data and attributes
+
+```djangotemplate
+{% widget 'widget_name' data=widget_data attrs=widget_attr_dict attr-name=attr_value %}
 ```
 
 ### widgetattrs
-
+Use this tag in widget template. It mixes attributes from template, call widget and widget declaration 
 ```djangotemplate
 {% widgetattrs %}
-{% widgetattrs attr-name=attr_value%}
+{% widgetattrs attrs=widget_attr_dict %}
+{% widgetattrs attr-name=attr_value %}
 ```
 
 ### widgetmedia

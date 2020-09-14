@@ -10,6 +10,7 @@ setup(
     version='1.0.1',
     packages=['django_widgets'],
     include_package_data=True,
+    license='BSD',
     description='Custom widgets for Django templates',
     long_description=open('README.md', 'r', encoding='utf-8').read(),
     long_description_content_type='text/markdown',

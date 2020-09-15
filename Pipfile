@@ -5,8 +5,11 @@ verify_ssl = true
 
 [dev-packages]
 v = {editable = true,version = "*"}
-django-widgets = {path = "."}
+django-widgets-engine = {path = "."}
 jinja2 = "*"
+wheel = "*"
+twine = "*"
+readme-renderer = "*"
 
 [packages]
 django = "*"

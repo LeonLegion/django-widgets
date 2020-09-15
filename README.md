@@ -4,6 +4,10 @@
 Widget is template linked with styles and scripts. Application gives you the ability collect media from 
 different widgets and places it in the template wherever you want.
 
+## INSTALLATION
+You can get Django Widgets Engine by using pip::
+
+    $ pip install django-widgets-engine
 
 ## Initialization
 Add to your Django settings

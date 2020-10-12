@@ -22,11 +22,12 @@ setup(
         'django'
     ],
     classifiers=[
-      'Development Status :: 5 - Production/Stable',
-      'Framework :: Django',
-      'Intended Audience :: Developers',
-      'Programming Language :: Python',
-      'Programming Language :: Python :: 3',
-      'Topic :: Software Development :: Libraries :: Python Modules'
+        'Development Status :: 5 - Production/Stable',
+        'Framework :: Django',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD License',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Topic :: Software Development :: Libraries :: Python Modules'
   ],
 )

@@ -13,7 +13,7 @@ class WidgetExtension(Extension):
     tags = {"widget", "widgetattrs", "widgetmedia"}
 
     def parse(self, parser):
-        token = parser.stream.next_if(TOKEN_NAME)
+        token = parser.stream.expect(TOKEN_NAME)
         context = nodes.ContextReference()
         if token.value == "widget" and parser.stream.current.test(TOKEN_STRING):
             args = [context, parser.parse_primary()]

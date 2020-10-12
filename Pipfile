@@ -11,8 +11,5 @@ wheel = "*"
 twine = "*"
 readme-renderer = "*"
 
-[packages]
-django = "*"
-
 [requires]
 python_version = "3.8"
